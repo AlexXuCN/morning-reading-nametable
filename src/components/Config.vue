@@ -1,7 +1,7 @@
 <template>
 
   <v-card>
-    <v-toolbar>
+    <v-toolbar class="position-fixed" style="z-index: 1;">
       <v-btn icon="mdi-close" @click="$emit('close')"></v-btn>
       <v-toolbar-title>设置</v-toolbar-title>
       <v-spacer></v-spacer>
@@ -9,8 +9,9 @@
         <v-btn text="保存" prepend-icon="mdi-check" @click="saveData"></v-btn>
       </v-toolbar-items>
     </v-toolbar>
-    <div class="d-flex flex-row align-start justify-start" v-if="prepared">
-      <v-sheet class="d-flex overflow-y-auto overflow-x-hidden" :height="contentHeight">
+    <div class="d-flex flex-row align-start justify-start overflow-hidden" v-if="prepared"
+      style="height: calc(100vh - 64px); margin-top: 64px;">
+      <v-sheet class="d-flex overflow-y-auto overflow-x-hidden" height="calc(100vh - 64px)">
         <v-list activatable width="240" mandatory v-model:activated="selectedTab">
           <v-list-item value="groups" prepend-icon="mdi-account-multiple" title="小组管理"></v-list-item>
           <v-list-item value="recorditems" prepend-icon="mdi-view-list" title="记录项目"></v-list-item>
@@ -19,12 +20,12 @@
         </v-list>
       </v-sheet>
 
-      <v-sheet class="d-flex flex-column flex-grow-1 overflow-y-auto overflow-x-hidden" :height="contentHeight"
-        color="background">
+      <v-sheet class="d-flex flex-column flex-grow-1 overflow-y-auto overflow-x-hidden" color="background" height="calc(100vh - 64px)">
         <div class="ma-2 pa-2">
           <template v-if="selectedTab[0] === 'groups'">
             <div class="d-flex flex-column justify-start align-center">
-              <!-- <v-expansion-panels multiple style="width: 80%;">
+              <ConfigGroupCard v-for="group in nameTableConfig.students" :group></ConfigGroupCard>
+              <!-- <v-expansion-panels multiple>
                 <v-expansion-panel v-for="group in nameTableConfig.students">
                   <v-expansion-panel-title>
                     <template v-slot:default="{ expanded }">
@@ -32,12 +33,12 @@
                       <v-btn icon="mdi-pencil" v-if="expanded" variant="text" size="small" class="mx-3"></v-btn>
 
                     </template>
-                  </v-expansion-panel-title>
-                  <v-expansion-panel-text>
+</v-expansion-panel-title>
+<v-expansion-panel-text>
 
-                  </v-expansion-panel-text>
-                </v-expansion-panel>
-              </v-expansion-panels> -->
+</v-expansion-panel-text>
+</v-expansion-panel>
+</v-expansion-panels> -->
               <v-empty-state icon="mdi-traffic-cone" title="Under Construction"></v-empty-state>
             </div>
           </template>
@@ -56,10 +57,17 @@
 
           <template v-if="selectedTab[0] === 'misc'">
             <v-list lines="two">
-              <v-list-item title="显示小组名称"
+              <v-list-item title="显示小组名称" density="compact"
                 @click="nameTableConfig.preferences.showGroupNames = !nameTableConfig.preferences.showGroupNames">
                 <template v-slot:append>
                   <v-list-item-action end><v-switch v-model="nameTableConfig.preferences.showGroupNames" hide-details
+                      inset color="primary"></v-switch></v-list-item-action>
+                </template>
+              </v-list-item>
+              <v-list-item title="居中显示内容" density="compact"
+                @click="nameTableConfig.preferences.justifyCenter = !nameTableConfig.preferences.justifyCenter">
+                <template v-slot:append>
+                  <v-list-item-action end><v-switch v-model="nameTableConfig.preferences.justifyCenter" hide-details
                       inset color="primary"></v-switch></v-list-item-action>
                 </template>
               </v-list-item>
@@ -71,6 +79,8 @@
         </div>
       </v-sheet>
     </div>
+
+
   </v-card>
 
 </template>
@@ -83,6 +93,7 @@ import { open, save } from '@tauri-apps/plugin-dialog'
 
 import { invoke } from '@tauri-apps/api/core'
 import { ref, onMounted } from 'vue'
+import ConfigGroupCard from './ConfigGroupCard.vue';
 
 let store = new Store('config.bin')
 const prepared = ref(false)

@@ -31,7 +31,8 @@ const defaultConfig = {
     }
   ],
   preferences: {
-    showGroupNames: true
+    showGroupNames: true,
+    justifyCenter: false
   }
 }
 

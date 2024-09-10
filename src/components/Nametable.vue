@@ -1,7 +1,7 @@
 <template>
-  <v-layout class="d-flex flex-column">
+  <v-layout>
     <v-main>
-      <template v-if="prepared">
+      <div v-if="prepared" class="d-flex flex-column align-center" :class="{'justify-center': props.config.preferences.justifyCenter}" style="height: calc(100vh - 64px);">
         <v-empty-state v-if="groupsMap.size === 0" icon="mdi-cancel" title="无数据" text="请在右下角的”设置“中添加配置"></v-empty-state>
         <v-container>
           <v-row align="center" no-gutters v-for="groupId in groupsMap.keys()">
@@ -19,7 +19,7 @@
             </v-col>
           </v-row>
         </v-container>
-      </template>
+      </div>
 
 
     </v-main>
